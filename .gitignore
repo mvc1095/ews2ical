@@ -1,0 +1,5 @@
+vendor/
+test.*
+ctags
+ews2ical.secret
+ews2ical.username
