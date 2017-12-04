@@ -1,5 +1,10 @@
 vendor/
 test.*
 ctags
+ews2ical.errors
+ews2ical.errors_to
+ews2ical.events
+ews2ical.ics
+ews2ical.log
 ews2ical.secret
 ews2ical.username

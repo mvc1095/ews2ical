@@ -31,6 +31,7 @@ $timezone = 'Eastern Standard Time';
 $host = "outlook.office365.com";
 $username = trim(file_get_contents(__DIR__ . '/ews2ical.username'));
 $password = trim(file_get_contents(__DIR__ . '/ews2ical.secret'));
+$errors_to = is_readable(__DIR__ . '/ews2ical.errors_to') ? file_get_contents(__DIR__ . '/ews2ical.errors_to') : $username;
 $version = Client::VERSION_2016;
 
 $client = new Client($host, $username, $password);
@@ -63,7 +64,10 @@ $tz  = 'America/Toronto';
 $dtz = new \DateTimeZone($tz);
 date_default_timezone_set($tz);
 
-$error_message = '';
+$log_errors = '';
+$log_events = '';
+$num_errors = 0;
+$num_events = 0;
 
 // Iterate over the results, printing any error messages or event ids.
 $response_messages = $response->ResponseMessages->FindItemResponseMessage;
@@ -72,9 +76,10 @@ foreach ($response_messages as $response_message) {
     if ($response_message->ResponseClass != ResponseClassType::SUCCESS) {
         $code = $response_message->ResponseCode;
         $message = $response_message->MessageText;
-        $output = "Failed to search for events with '$code: $message'\n";
-        fwrite(STDERR, $output);
-        $error_message .= $output;
+        $error = "Failed to search for events with '$code: $message'\n";
+        fwrite(STDERR, $error);
+        $log_errors .= $error;
+        $num_errors++;
         continue;
     }
 
@@ -86,7 +91,7 @@ foreach ($response_messages as $response_message) {
         $end = new DateTime($item->End);
         $created = new DateTime($item->DateTimeCreated);
         $isCancelled = $item->IsCancelled ? "Yes" : "No";
-        $output = 'Found event ' . $item->ItemId->Id . "\n"
+        $log_events .= 'Found event ' . $item->ItemId->Id . "\n"
             . '  Change Key: ' . $item->ItemId->ChangeKey . "\n"
             . '  Location:  ' . $item->Location . "\n"
             . '  Title: ' . $item->Subject . "\n"
@@ -98,7 +103,7 @@ foreach ($response_messages as $response_message) {
             . '  Cancelled:    ' . $isCancelled . "\n"
             . '  MyResponse:    ' . $item->MyResponseType . "\n"
             . "\n";
-        //fwrite(STDOUT, $output);
+        $num_events++;
 
         $vEvent = new \Eluceo\iCal\Component\Event();
         $vEvent->setDtStart(new \DateTime($item->Start));
@@ -137,10 +142,24 @@ foreach ($response_messages as $response_message) {
     }
 }
 
-if ($error_message) {
-  mail($username, 'ews2ical: errors found', $error_message);
+// Handle errors
+if ($log_errors) {
+  mail($errors_to, 'ews2ical: errors found', $log_errors);
+  file_put_contents('ews2ical.errors', $log_errors);
 }
 
+// Print to standard output for the web application
+$output = $vCalendar->render() . "\n";
 header('Content-Type: text/calendar; charset=utf-8');
 header('Content-Disposition: attachment; filename="cal.ics"');
-print $vCalendar->render();
+print $output;
+
+// Save a local copy
+file_put_contents('ews2ical.ics', $output);
+
+// Save a copy of all events
+file_put_contents('ews2ical.events', $log_events);
+
+// Save a log of this run
+$log = sprintf("%s %d events %d errors\n", date('r'), $num_events, $num_errors);
+file_put_contents('ews2ical.log', $log, FILE_APPEND);

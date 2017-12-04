@@ -1,9 +1,9 @@
 ews2ical.php
 ============
 
-Pulls events from an Exchange Web Service and generate an iCal file for import into another system, eg. Google Calendar, because *anything* is better than using Outlook.
+Pulls events from an Exchange Web Service and generate an iCal file for import into another system, eg. Google Calendar or Apple Calendar, because *anything* is better than using Outlook.
 
-This script is pretty much just sample code and libraries from these two sources:
+This script is pretty much just sample code and libraries from these two sources, stapled together with some basic logging and error handling:
 
  - https://github.com/jamesiarmes/php-ews
  - https://github.com/markuspoerschke/iCal
@@ -23,8 +23,8 @@ Note: Since your password is here in cleartext, you should obviously only put th
 Notes
 -----
 
-Errors will be printed on the console and emailed to the address given as your
-username.
+The script will search for all events starting between six months prior to, and one year later than, the current date.
 
-The script will search for all events starting between six months prior to,
-and one year later than, the current date.
+A copy of the iCal file will be saved in `ews2cal.ics`, a copy of all event data from Exchange will be saved in `ews2cal.events`, and a brief log message will be appended to `ews2cal.log`.
+
+Errors will be saved to `ews2cal.errors`, printed on the console, and emailed to the address given as your username, unless a different email address is given in the file `ews2cal.errors_to`.
