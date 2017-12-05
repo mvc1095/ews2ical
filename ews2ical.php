@@ -161,5 +161,8 @@ file_put_contents('ews2ical.ics', $output);
 file_put_contents('ews2ical.events', $log_events);
 
 // Save a log of this run
-$log = sprintf("%s %d events %d errors\n", date('r'), $num_events, $num_errors);
+$agent = $_SERVER['HTTP_USER_AGENT'];
+$remote_addr = $_SERVER['REMOTE_ADDR'];
+$remote_host = gethostbyaddr($remote_addr);
+$log = sprintf("%s: %s: %d events %d errors (%s) %s\n", date('r'), $remote_host, $num_events, $num_errors, $agent, $_SERVER['REQUEST_URI']);
 file_put_contents('ews2ical.log', $log, FILE_APPEND);
