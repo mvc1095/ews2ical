@@ -18,13 +18,13 @@ Installation
  1. Run this script to produce an iCal file as output, and import it into your favourite calender application
  1. Optional: Place this script somewhere on a publicly-accessible webserver, and copy its URL into your calender application
 
-Note: Since your password is here in cleartext, you should obviously only put this on web server you trust completely, and not one anyone else could access.
+Note: Since your password is here in cleartext, you should obviously only put this on a webserver you trust completely, and not one anyone else could access.
 
 Notes
 -----
 
-The script will search for all events starting between six months prior to, and one year later than, the current date.
+The script will search for all events with a start date between six months prior to, and one year later than, the current date.
 
-A copy of the iCal file will be saved in `ews2cal.ics`, a copy of all event data from Exchange will be saved in `ews2cal.events`, and a brief log message will be appended to `ews2cal.log`.
+A copy of the iCal file will be saved in `ews2cal.ics`, a copy of all event data from Exchange will be saved in `ews2cal.events`, and (if not accessed via CLI) a brief log message will be appended to `ews2cal.log`.
 
 Errors will be saved to `ews2cal.errors`, printed on the console, and emailed to the address given as your username, unless a different email address is given in the file `ews2cal.errors_to`.
