@@ -227,8 +227,8 @@ file_put_contents('ews2ical.events', $log_events);
 
 // Save a log of this run
 if (php_sapi_name() != "cli") {
-  $log = sprintf("%s: %s: %d events %d attempts %d errors (%s) %s\n",
-      date('r'), $remote_host, $num_events, $num_tries, $num_errors, $agent,
+  $log = sprintf("%s: %s: %d events %d attempt%s %d errors (%s) %s\n",
+      date('r'), $remote_host, $num_events, $num_tries, $num_tries == 1 ? '' : 's', $num_errors, $agent,
       $_SERVER['REQUEST_URI']);
   file_put_contents('ews2ical.log', $log, FILE_APPEND);
 }
