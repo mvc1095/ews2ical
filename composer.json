@@ -1,6 +1,0 @@
-{
-    "require": {
-        "php-ews/php-ews": "^1.0",
-        "eluceo/ical": "^0.13.0"
-    }
-}
